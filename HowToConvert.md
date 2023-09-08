@@ -12,6 +12,17 @@
 親ゲームオブジェクトの位置を原点とする座標をローカル座標と呼びます。
 <br>
 
+## スクリーン空間について
+スクリーン空間はカメラで表示している領域をスクリーン座標で表したものです。
+<br>
+スクリーン座標の値は解像度と一致しています。ピクセルが単位です。
+<br>
+<br>
+スクリーン座標は左下 (0, 0) 、右上 (pixelWidth, pixelHeight) です。
+<br>
+タッチ位置の座標やマウスの座標はスクリーン座標で取得します。
+<br>
+
 ## ビューポート空間について
 ビューポート空間はカメラで表示している領域をビューポート座標で表したものです。
 <br>
@@ -23,17 +34,6 @@
 時計回りに左下 (0, 0) 、右下 (1, 0) 、右上 (1, 1) 、左上 (0, 1) となります。それらの間は0〜1までの小数点で表されます。
 <br>
 スクリーン座標の値を0～1の間で正規化しているため、様々な解像度における利用を想定していて、左上や右下の位置を指定する際などに用います。
-<br>
-
-## スクリーン空間について
-スクリーン空間はカメラで表示している領域をスクリーン座標で表したものです。
-<br>
-スクリーン座標の値は解像度と一致しています。ピクセルが単位です。
-<br>
-<br>
-スクリーン座標は左下 (0, 0) 、右上 (pixelWidth, pixelHeight) です。
-<br>
-タッチ位置の座標やマウスの座標はスクリーン座標で取得します。
 <br>
 <br>
 
@@ -54,14 +54,66 @@ public class TransformCoordinates : MonoBehaviour {
 	// ワールド座標を変換したスクリーン座標
 	Vector3 screenPos;
 	// ワールド座標を変換したビューポート座標
-	Vector3 viewPos;
+	Vector3 viewportPos;
 
 	void Update() {
 		// ワールド空間の position をスクリーン空間に変換します。
 		screenPos = camera.WorldToScreenPoint(targetWorldPos.position);
 
 		// ワールド空間の position をビューポート空間に変換します。
-		viewPos = cam.WorldToViewportPoint(targetWorldPos.position);
+		viewportPos = cam.WorldToViewportPoint(targetWorldPos.position);
+	}
+}
+```
+
+<br>
+### スクリーン座標からワールド座標、ビューポート座標に変換する。
+```c#
+public class TransformCoordinates : MonoBehaviour {
+
+	// 変換するスクリーン座標(0~解像度)
+	public Vector3 targetScreenPos;
+
+	// カメラ
+	public Camera camera;
+
+	// スクリーン座標を変換したワールド座標
+	Vector3 worldPos;
+	// スクリーン座標を変換したビューポート座標
+	Vector3 viewportPos;
+
+	void Update() {
+		// スクリーン空間の position をワールド空間に変換します。
+		worldPos = cam.ViewportToWorldPoint(targetScreenPos);
+  
+  		// スクリーン空間の position をビューポート空間に変換します。
+		viewportPos = camera.ViewportToScreenPoint(targetScreenPos);
+	}
+}
+```
+
+<br>
+### ビューポート座標からワールド座標、スクリーン座標に変換する。
+```c#
+public class TransformCoordinates : MonoBehaviour {
+
+	// 変換するビューポート座標(0~1)
+	public Vector3 targetViewportPos;
+
+	// カメラ
+	public Camera camera;
+
+	// ビューポート座標を変換したワールド座標
+	Vector3 worldPos;
+	// ビューポート座標を変換したスクリーン座標
+	Vector3 screenPos;
+
+	void Update() {
+		// ビューポート空間の position をワールド空間に変換します。
+		worldPos = cam.ViewportToWorldPoint(targetViewportPos);
+  
+  		// ビューポート空間の position をスクリーン空間に変換します。
+		screenPos = camera.ViewportToScreenPoint(targetViewportPos);
 	}
 }
 ```
